@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, LegacyRef, useRef, useState } from "react";
 // icons
 import { BsPin, BsPinFill } from "react-icons/bs";
 import {
@@ -9,30 +9,13 @@ import {
 import { IoColorFillOutline } from "react-icons/io5";
 // styles
 import styles from "./Note.module.scss";
-// redux
-import { useSelector, useDispatch } from "react-redux";
-import {
-  updateTitle,
-  updateNote,
-  updateBgColor,
-  addImages,
-  removeImages,
-  addInTrash,
-  removeFromTrash,
-  addInArchive,
-  removeFromArchive,
-  addNoteToPinned,
-  removeNoteFromPinned,
-  selectTitle,
-  selectNote,
-  selectBgColor,
-  selectImages,
-  selectIsPinned,
-  selectInTrash,
-  selectInArchive,
-} from "../../../slices/note";
 // libraries
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { v4 as uuid } from "uuid";
+import { useDispatch } from "react-redux";
+import { updateNote } from "../../../slices/notes";
+// types
+import { INote } from "../../../slices/notes";
 
 const bgColorForNote = [
   "#5D2C2A",
@@ -48,23 +31,36 @@ const bgColorForNote = [
   "#3D3F44",
 ];
 
-const Note = () => {
-  const [isHovering, setIsHovering] = useState(false);
+interface NotesProps extends INote {}
 
-  const title = useSelector(selectTitle);
-  const note = useSelector(selectNote);
-  const bgColor = useSelector(selectBgColor);
-  const images = useSelector(selectImages);
-  const isPinned = useSelector(selectIsPinned);
-  const inTrash = useSelector(selectInTrash);
-  const inArchive = useSelector(selectInArchive);
+const Note = ({
+  id,
+  title,
+  note,
+  bgColor,
+  images,
+  isPinned,
+  inTrash,
+  inArchive,
+}: NotesProps) => {
+  const [parent] = useAutoAnimate();
+
   const dispatch = useDispatch();
 
-  console.log({ isPinned });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const [noteState, setNoteState] = useState<INote>({
+    id: uuid(),
+    title: "",
+    note: "",
+    bgColor: "#1F2025",
+    images: [],
+    isPinned: false,
+    inTrash: false,
+    inArchive: false,
+  });
 
   const textRef = useRef<null | HTMLTextAreaElement>(null);
-
-  const [parent] = useAutoAnimate();
 
   const handleMouseOver = () => {
     setIsHovering(true);
@@ -75,11 +71,21 @@ const Note = () => {
   };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    dispatch(updateTitle(e.target.value));
+    setNoteState((prev) => {
+      return {
+        ...prev,
+        title: e.target.value,
+      };
+    });
   };
 
   const handleNoteChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch(updateNote(e.target.value));
+    setNoteState((prev) => {
+      return {
+        ...prev,
+        note: e.target.value,
+      };
+    });
     e.target.style.height = "auto";
     e.target.style.height = e.target.scrollHeight + "px";
   };
@@ -87,17 +93,53 @@ const Note = () => {
   const handleColorChange = () => {
     const randomBgColor =
       bgColorForNote[Math.floor(Math.random() * bgColorForNote.length)];
-    console.log(randomBgColor);
-    dispatch(updateBgColor(randomBgColor));
+
+    setNoteState((prev) => {
+      return {
+        ...prev,
+        bgColor: randomBgColor,
+      };
+    });
   };
 
+  const handlePinNote = () => {
+    if (isPinned) {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          isPinned: false,
+        };
+      });
+    } else {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          isPinned: true,
+        };
+      });
+    }
+  };
+
+  const handleUpdateNoteBtnClick = () => {
+    dispatch(updateNote(noteState));
+    setNoteState({
+      id: uuid(),
+      title: "",
+      note: "",
+      bgColor: "#1F2025",
+      images: [],
+      isPinned: false,
+      inTrash: false,
+      inArchive: false,
+    });
+  };
   return (
     <div
       className={styles.container}
       style={{ backgroundColor: bgColor }}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
-      ref={parent}
+      ref={parent as LegacyRef<HTMLDivElement> | undefined}
     >
       <div className={styles.headingContainer}>
         <input
@@ -105,21 +147,16 @@ const Note = () => {
           className={styles.title}
           value={title}
           onChange={(e) => handleTitleChange(e)}
+          placeholder='Title'
         />
 
         {isHovering &&
           (isPinned ? (
-            <div
-              className={styles.pinIcons}
-              onClick={() => dispatch(removeNoteFromPinned())}
-            >
+            <div className={styles.pinIcons} onClick={handlePinNote}>
               <BsPinFill className={styles.pin} />
             </div>
           ) : (
-            <div
-              className={styles.pinIcons}
-              onClick={() => dispatch(addNoteToPinned())}
-            >
+            <div className={styles.pinIcons} onClick={handlePinNote}>
               <BsPin className={styles.pin} />
             </div>
           ))}
@@ -132,6 +169,7 @@ const Note = () => {
           handleNoteChange(e);
         }}
         ref={textRef}
+        placeholder='Take a note....'
       />
 
       {isHovering && (
@@ -143,6 +181,13 @@ const Note = () => {
           <MdOutlineImage className={styles.bottomIcons} />
           <MdOutlineArchive className={styles.bottomIcons} />
           <MdDeleteOutline className={styles.bottomIcons} />
+
+          <button
+            className={styles.createNoteBtn}
+            onClick={handleUpdateNoteBtnClick}
+          >
+            Update Note
+          </button>
         </div>
       )}
     </div>
