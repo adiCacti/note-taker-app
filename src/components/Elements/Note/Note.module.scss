@@ -1,0 +1,75 @@
+.container {
+  max-width: 238px;
+  min-height: 105px;
+  background-color: #202124;
+
+  border: 1px solid #5f6368;
+  border-radius: 8px;
+  padding: 16px;
+
+  border-width: 1px;
+
+  .headingContainer {
+    display: flex;
+    justify-content: space-between;
+    .title {
+      outline: none;
+      border: none;
+      background-color: transparent;
+      font-family: "Open Sans", sans-serif;
+      font-weight: 600;
+      max-width: 80%;
+      font-size: 20px;
+      margin: 0;
+    }
+    .pinIcons {
+      .pin {
+        width: 20px;
+        height: 20px;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+
+        &:active {
+          transform: scale(0.99);
+        }
+      }
+    }
+  }
+
+  .content {
+    outline: none;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    min-height: 50px;
+    max-height: 800px;
+    width: 100%;
+    background-color: transparent;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: 17.5px;
+    margin-top: 15px;
+    margin-bottom: 0;
+  }
+
+  .bottomIconsContainer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-around;
+
+    .bottomIcons {
+      width: 20px;
+      height: 20px;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &:active {
+        transform: scale(0.99);
+      }
+    }
+  }
+}
