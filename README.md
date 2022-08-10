@@ -30,7 +30,8 @@ This app helps you to take notes. You can pin notes, move them to archive or mov
 
 ## Screenshot
 
-![screenshot](Note-Taker-Screenshot.png)
+![Screenshot 2022-08-10 at 11 57 01 AM](https://user-images.githubusercontent.com/90179946/183830578-8587ea53-faa8-49ad-bf6d-f5f2b91dd141.png)
+
 
 ## Dependencies 🗃
 
