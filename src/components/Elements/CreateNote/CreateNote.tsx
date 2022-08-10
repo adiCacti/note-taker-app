@@ -14,8 +14,6 @@ import { useDispatch } from "react-redux";
 import { addNote } from "../../../slices/notes";
 // types
 import { INote } from "../../../slices/notes";
-// components
-import Dropzone from "../Dropzone/Dropzone";
 
 const bgColorForNote = [
   "#5D2C2A",
@@ -31,14 +29,16 @@ const bgColorForNote = [
   "#3D3F44",
 ];
 
+const imageMimeType = /image\/(png|jpg|jpeg)/i;
+
 const CreateNote = () => {
   const dispatch = useDispatch();
 
   const [isHovering, setIsHovering] = useState(false);
 
-  const [isDropzoneOpen, setIsDropzoneOpen] = useState(false);
+  const [file, setFile] = useState<any>(null);
 
-  const [fileToImport, setFileToImport] = useState<any>();
+  const [fileDataURL, setFileDataURL] = useState<string | null>(null);
 
   const [noteState, setNoteState] = useState<INote>({
     id: uuid(),
@@ -123,29 +123,49 @@ const CreateNote = () => {
       inTrash: false,
       inArchive: false,
     });
-    setFileToImport([]);
-    setIsDropzoneOpen(false);
   };
 
-  const handleDropzone = () => {
-    setIsDropzoneOpen((prev) => !prev);
-  };
-
-  useEffect(() => {
-    if (fileToImport !== undefined && fileToImport.length > 0) {
-      setNoteState((prev) => {
-        return {
-          ...prev,
-          images: [...fileToImport],
-        };
-      });
+  const changeHandler = (e: any) => {
+    const file = e.target.files[0];
+    if (!file.type.match(imageMimeType)) {
+      alert("Image mime type is not valid");
+      return;
     }
-  }, [fileToImport]);
+    setFile(file);
+  };
 
   useEffect(() => {
-    console.log("inside createnote");
-    console.log(noteState.images);
-  }, [noteState]);
+    let fileReader: FileReader,
+      isCancel = false;
+    if (file as any) {
+      fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const { result } = e.target as any;
+        if (result && !isCancel) {
+          setFileDataURL(result);
+        }
+      };
+      if (file) {
+        fileReader.readAsDataURL(file);
+      }
+    }
+    return () => {
+      isCancel = true;
+      if (fileReader && fileReader.readyState === 1) {
+        fileReader.abort();
+      }
+    };
+  }, [file]);
+
+  useEffect(() => {
+    if (!fileDataURL) return;
+    setNoteState((prev) => {
+      return {
+        ...prev,
+        images: [...prev.images, fileDataURL],
+      };
+    });
+  }, [fileDataURL]);
 
   return (
     <div className={styles.outerContainer}>
@@ -204,55 +224,43 @@ const CreateNote = () => {
           />
         )}
 
-        <AnimatePresence>
-          {isDropzoneOpen && (
-            <Dropzone key={1} setFileToImport={setFileToImport} />
-          )}
-
-          {noteState.images && (
-            <div key={2} className={styles.imgPreviewContainer}>
-              {noteState.images.map((image: string, index: number) => (
+        {noteState.images && (
+          <div key={2} className={styles.imgPreviewContainer}>
+            {noteState.images.map((image: string, index: number) => {
+              return (
                 <div key={index} className={styles.imgOuter}>
-                  <img
-                    src={image}
-                    className={styles.img}
-                    onLoad={() => {
-                      URL.revokeObjectURL(image);
-                    }}
-                  />
+                  <img src={image} className={styles.img} />
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+        )}
 
-          {isHovering && (
-            <motion.div
-              className={styles.bottomIconsContainer}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <IoColorFillOutline
-                className={styles.bottomIcons}
-                onClick={handleColorChange}
-              />
+        <div className={styles.bottomIconsContainer}>
+          <IoColorFillOutline
+            className={styles.bottomIcons}
+            onClick={handleColorChange}
+          />
 
-              <MdOutlineImage
-                className={styles.bottomIcons}
-                onClick={handleDropzone}
-              />
+          <label className={styles.uploadImg}>
+            <MdOutlineImage className={styles.bottomIcons} />
+            <input
+              type='file'
+              id='image'
+              accept='.png, .jpg, .jpeg'
+              onChange={changeHandler}
+            />
+          </label>
 
-              <MdOutlineArchive className={styles.bottomIcons} />
+          <MdOutlineArchive className={styles.bottomIcons} />
 
-              <button
-                className={styles.createNoteBtn}
-                onClick={handleCreateNoteBtnClick}
-              >
-                Create Note
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <button
+            className={styles.createNoteBtn}
+            onClick={handleCreateNoteBtnClick}
+          >
+            Create Note
+          </button>
+        </div>
       </div>
     </div>
   );

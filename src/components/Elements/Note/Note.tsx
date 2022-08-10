@@ -18,8 +18,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { deleteNote, updateNote } from "../../../slices/notes";
 // types
 import { INote } from "../../../slices/notes";
-// components
-import Dropzone from "../Dropzone/Dropzone";
 // hooks
 import { useDebounce } from "../../../hooks/useDebounce";
 
@@ -37,6 +35,8 @@ const bgColorForNote = [
   "#3D3F44",
 ];
 
+const imageMimeType = /image\/(png|jpg|jpeg)/i;
+
 interface NotesProps extends INote {}
 
 const Note = ({
@@ -53,9 +53,9 @@ const Note = ({
 
   const [isHovering, setIsHovering] = useState(false);
 
-  const [isDropzoneOpen, setIsDropzoneOpen] = useState(false);
+  const [file, setFile] = useState<any>(null);
 
-  const [fileToImport, setFileToImport] = useState<any>();
+  const [fileDataURL, setFileDataURL] = useState<string | null>(null);
 
   const [noteState, setNoteState] = useState<INote>({
     id: id,
@@ -161,26 +161,51 @@ const Note = ({
     }
   };
 
-  const handleDropzone = () => {
-    setIsDropzoneOpen((prev) => !prev);
+  const changeHandler = (e: any) => {
+    const file = e.target.files[0];
+    if (!file.type.match(imageMimeType)) {
+      alert("Image mime type is not valid");
+      return;
+    }
+    setFile(file);
   };
 
   useEffect(() => {
-    if (fileToImport !== undefined && fileToImport.length > 0) {
-      setNoteState((prev) => {
-        return {
-          ...prev,
-          images: [...fileToImport],
-        };
-      });
+    let fileReader: FileReader,
+      isCancel = false;
+    if (file as any) {
+      fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const { result } = e.target as any;
+        if (result && !isCancel) {
+          setFileDataURL(result);
+        }
+      };
+      if (file) {
+        fileReader.readAsDataURL(file);
+      }
     }
-  }, [fileToImport]);
+    return () => {
+      isCancel = true;
+      if (fileReader && fileReader.readyState === 1) {
+        fileReader.abort();
+      }
+    };
+  }, [file]);
+
+  useEffect(() => {
+    if (!fileDataURL) return;
+    setNoteState((prev) => {
+      return {
+        ...prev,
+        images: [...prev.images, fileDataURL],
+      };
+    });
+  }, [fileDataURL]);
 
   useEffect(() => {
     if (debouncedNoteState) {
-      console.log("hey this works wow");
       dispatch(updateNote(noteState));
-      setIsDropzoneOpen(false);
     }
   }, [debouncedNoteState]);
 
@@ -243,70 +268,53 @@ const Note = ({
         placeholder='Take a note....'
       />
 
-      <AnimatePresence>
-        {isDropzoneOpen && (
-          <Dropzone key={1} setFileToImport={setFileToImport} />
+      {noteState.images && (
+        <div key={2} className={styles.imgPreviewContainer}>
+          {noteState.images.map((image: string, index: number) => (
+            <div key={index} className={styles.imgOuter}>
+              <img src={image} className={styles.img} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className={styles.bottomIconsContainer}>
+        <IoColorFillOutline
+          className={styles.bottomIcons}
+          onClick={handleColorChange}
+        />
+
+        <label className={styles.uploadImg}>
+          <MdOutlineImage className={styles.bottomIcons} />
+          <input
+            type='file'
+            id='image'
+            accept='.png, .jpg, .jpeg'
+            onChange={changeHandler}
+          />
+        </label>
+
+        {noteState.inArchive ? (
+          <MdArchive
+            className={styles.bottomIcons}
+            onClick={handleArchiveNote}
+          />
+        ) : (
+          <MdOutlineArchive
+            className={styles.bottomIcons}
+            onClick={handleArchiveNote}
+          />
         )}
 
-        {noteState.images && (
-          <div key={2} className={styles.imgPreviewContainer}>
-            {noteState.images.map((image: string, index: number) => (
-              <div key={index} className={styles.imgOuter}>
-                <img
-                  src={image}
-                  className={styles.img}
-                  onLoad={() => {
-                    URL.revokeObjectURL(image);
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+        {noteState.inTrash ? (
+          <MdDelete className={styles.bottomIcons} onClick={handleDeleteNote} />
+        ) : (
+          <MdDeleteOutline
+            className={styles.bottomIcons}
+            onClick={handleDeleteNote}
+          />
         )}
-
-        {isHovering && (
-          <motion.div
-            className={styles.bottomIconsContainer}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <IoColorFillOutline
-              className={styles.bottomIcons}
-              onClick={handleColorChange}
-            />
-
-            <MdOutlineImage
-              className={styles.bottomIcons}
-              onClick={handleDropzone}
-            />
-
-            {noteState.inArchive ? (
-              <MdArchive
-                className={styles.bottomIcons}
-                onClick={handleArchiveNote}
-              />
-            ) : (
-              <MdOutlineArchive
-                className={styles.bottomIcons}
-                onClick={handleArchiveNote}
-              />
-            )}
-
-            {noteState.inTrash ? (
-              <MdDelete
-                className={styles.bottomIcons}
-                onClick={handleDeleteNote}
-              />
-            ) : (
-              <MdDeleteOutline
-                className={styles.bottomIcons}
-                onClick={handleDeleteNote}
-              />
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 };
