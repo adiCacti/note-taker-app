@@ -25,7 +25,7 @@ function App() {
         handleSideBarTopicUpdate={handleSideBarTopicUpdate}
       />
 
-      <div className={styles.noteTakingContainer}>
+      <div className={styles.noteContainer}>
         {selectedSideBarTopic === "notes" && (
           <>
             <CreateNote />
