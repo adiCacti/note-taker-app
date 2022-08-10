@@ -13,6 +13,9 @@ This app helps you to take notes. You can pin notes, move them to archive or mov
 
 - **Simple UI ⚡**
 - **Mobile responsive 📱**
+- **Images can be added to each note by clicking on small img icon below on the note (png | jpg | jpeg) 🖼️**
+- **Modal added to view images after the note is created 🔭**
+- **Usedebouncer hook used to save notes automatically 💾**
 - **Colors can be added to each notes 🍭**
 - **Notes can be archived 🫙**
 - **Notes can be added to trash 🗑️**
