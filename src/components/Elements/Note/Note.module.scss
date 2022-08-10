@@ -83,6 +83,27 @@
     justify-content: space-around;
     align-items: center;
 
+    .uploadImg {
+      width: 20px;
+      height: 20px;
+      input {
+        display: none;
+      }
+
+      .bottomIcons {
+        width: 20px;
+        height: 20px;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+
+        &:active {
+          transform: scale(0.99);
+        }
+      }
+    }
+
     .bottomIcons {
       width: 20px;
       height: 20px;
