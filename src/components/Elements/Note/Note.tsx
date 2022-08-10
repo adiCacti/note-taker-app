@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 // icons
 import { BsPin, BsPinFill } from "react-icons/bs";
 import {
@@ -18,6 +18,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { deleteNote, updateNote } from "../../../slices/notes";
 // types
 import { INote } from "../../../slices/notes";
+// components
+import Dropzone from "../Dropzone/Dropzone";
 
 const bgColorForNote = [
   "#5D2C2A",
@@ -49,12 +51,16 @@ const Note = ({
 
   const [isHovering, setIsHovering] = useState(false);
 
+  const [isDropzoneOpen, setIsDropzoneOpen] = useState(false);
+
+  const [fileToImport, setFileToImport] = useState<any>();
+
   const [noteState, setNoteState] = useState<INote>({
     id: id,
     title: title,
     note: note,
     bgColor: bgColor,
-    images: images,
+    images: [...images],
     isPinned: isPinned,
     inTrash: inTrash,
     inArchive: inArchive,
@@ -155,6 +161,25 @@ const Note = ({
     }
   };
 
+  const handleDropzone = () => {
+    setIsDropzoneOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (fileToImport !== undefined && fileToImport.length > 0) {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          images: [...fileToImport],
+        };
+      });
+    }
+  }, [fileToImport]);
+
+  useEffect(() => {
+    console.table(noteState.images);
+  }, [noteState]);
+
   return (
     <div
       className={styles.container}
@@ -215,6 +240,26 @@ const Note = ({
       />
 
       <AnimatePresence>
+        {isDropzoneOpen && (
+          <Dropzone key={1} setFileToImport={setFileToImport} />
+        )}
+
+        {images && (
+          <div key={2} className={styles.imgPreviewContainer}>
+            {noteState.images.map((image: string, index: number) => (
+              <div key={index} className={styles.imgOuter}>
+                <img
+                  src={image.slice(5)}
+                  className={styles.img}
+                  onLoad={() => {
+                    URL.revokeObjectURL(image);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
         {isHovering && (
           <motion.div
             className={styles.bottomIconsContainer}
@@ -226,7 +271,11 @@ const Note = ({
               className={styles.bottomIcons}
               onClick={handleColorChange}
             />
-            <MdOutlineImage className={styles.bottomIcons} />
+
+            <MdOutlineImage
+              className={styles.bottomIcons}
+              onClick={handleDropzone}
+            />
 
             {noteState.inArchive ? (
               <MdArchive

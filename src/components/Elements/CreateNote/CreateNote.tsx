@@ -1,11 +1,7 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 // icons
 import { BsPin, BsPinFill } from "react-icons/bs";
-import {
-  MdDeleteOutline,
-  MdOutlineArchive,
-  MdOutlineImage,
-} from "react-icons/md";
+import { MdOutlineArchive, MdOutlineImage } from "react-icons/md";
 import { IoColorFillOutline } from "react-icons/io5";
 // styles
 import styles from "./CreateNote.module.scss";
@@ -18,6 +14,8 @@ import { useDispatch } from "react-redux";
 import { addNote } from "../../../slices/notes";
 // types
 import { INote } from "../../../slices/notes";
+// components
+import Dropzone from "../Dropzone/Dropzone";
 
 const bgColorForNote = [
   "#5D2C2A",
@@ -37,6 +35,10 @@ const CreateNote = () => {
   const dispatch = useDispatch();
 
   const [isHovering, setIsHovering] = useState(false);
+
+  const [isDropzoneOpen, setIsDropzoneOpen] = useState(false);
+
+  const [fileToImport, setFileToImport] = useState<any>();
 
   const [noteState, setNoteState] = useState<INote>({
     id: uuid(),
@@ -123,11 +125,28 @@ const CreateNote = () => {
     });
   };
 
+  const handleDropzone = () => {
+    setIsDropzoneOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (fileToImport !== undefined && fileToImport.length > 0) {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          images: [...fileToImport],
+        };
+      });
+    }
+  }, [fileToImport]);
+
   return (
     <div className={styles.outerContainer}>
       <div
         className={styles.container}
-        style={{ backgroundColor: noteState.bgColor }}
+        style={{
+          backgroundColor: noteState.bgColor,
+        }}
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
       >
@@ -166,17 +185,39 @@ const CreateNote = () => {
           </AnimatePresence>
         </div>
 
-        <textarea
-          className={styles.content}
-          value={noteState.note}
-          onChange={(e) => {
-            handleNoteChange(e);
-          }}
-          ref={textRef}
-          placeholder='Take a note....'
-        />
+        {isHovering && (
+          <textarea
+            className={styles.content}
+            value={noteState.note}
+            onChange={(e) => {
+              handleNoteChange(e);
+            }}
+            ref={textRef}
+            placeholder='Take a note....'
+          />
+        )}
 
         <AnimatePresence>
+          {isDropzoneOpen && (
+            <Dropzone key={1} setFileToImport={setFileToImport} />
+          )}
+
+          {noteState.images && (
+            <div key={2} className={styles.imgPreviewContainer}>
+              {noteState.images.map((image: string, index: number) => (
+                <div key={index} className={styles.imgOuter}>
+                  <img
+                    src={image}
+                    className={styles.img}
+                    onLoad={() => {
+                      URL.revokeObjectURL(image);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           {isHovering && (
             <motion.div
               className={styles.bottomIconsContainer}
@@ -188,7 +229,12 @@ const CreateNote = () => {
                 className={styles.bottomIcons}
                 onClick={handleColorChange}
               />
-              <MdOutlineImage className={styles.bottomIcons} />
+
+              <MdOutlineImage
+                className={styles.bottomIcons}
+                onClick={handleDropzone}
+              />
+
               <MdOutlineArchive className={styles.bottomIcons} />
 
               <button

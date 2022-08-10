@@ -73,6 +73,28 @@
       margin-bottom: 0;
     }
 
+    .imgPreviewContainer {
+      width: 100%;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      margin: 15px 0;
+
+      .imgOuter {
+        border: 0.5px solid white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: fit-content;
+        width: fit-content;
+
+        .img {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+
     .bottomIconsContainer {
       margin-top: 15px;
       display: flex;
