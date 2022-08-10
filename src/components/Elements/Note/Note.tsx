@@ -20,6 +20,7 @@ import { deleteNote, updateNote } from "../../../slices/notes";
 import { INote } from "../../../slices/notes";
 // hooks
 import { useDebounce } from "../../../hooks/useDebounce";
+import { Modal } from "../Modal/Modal";
 
 const bgColorForNote = [
   "#5D2C2A",
@@ -71,6 +72,20 @@ const Note = ({
   const debouncedNoteState = useDebounce<INote>(noteState, 1000);
 
   const textRef = useRef<null | HTMLTextAreaElement>(null);
+
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    imgUrl: "",
+  });
+
+  const showModal = (url: string) =>
+    setModalInfo((prev) => {
+      return {
+        ...prev,
+        isOpen: !prev.isOpen,
+        imgUrl: url,
+      };
+    });
 
   const handleMouseOver = () => {
     setIsHovering(true);
@@ -210,112 +225,129 @@ const Note = ({
   }, [debouncedNoteState]);
 
   return (
-    <div
-      className={styles.container}
-      style={
-        isHovering
-          ? {
-              backgroundColor: noteState.bgColor,
-              justifyContent: "space-between",
-            }
-          : { backgroundColor: noteState.bgColor, justifyContent: "flex-start" }
-      }
-      onMouseOver={handleMouseOver}
-      onMouseOut={handleMouseOut}
-    >
-      <div className={styles.headingContainer}>
-        <input
-          type='text'
-          className={styles.title}
-          value={noteState.title}
-          onChange={(e) => handleTitleChange(e)}
-          placeholder='Title'
-        />
-
-        <AnimatePresence>
-          {isHovering &&
-            (noteState.isPinned ? (
-              <motion.div
-                className={styles.pinIcons}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={handlePinNote}
-              >
-                <BsPinFill className={styles.pin} />
-              </motion.div>
-            ) : (
-              <motion.div
-                className={styles.pinIcons}
-                onClick={handlePinNote}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <BsPin className={styles.pin} />
-              </motion.div>
-            ))}
-        </AnimatePresence>
-      </div>
-
-      <textarea
-        className={styles.content}
-        value={noteState.note}
-        onChange={(e) => {
-          handleNoteChange(e);
-        }}
-        ref={textRef}
-        placeholder='Take a note....'
-      />
-
-      {noteState.images && (
-        <div key={2} className={styles.imgPreviewContainer}>
-          {noteState.images.map((image: string, index: number) => (
-            <div key={index} className={styles.imgOuter}>
-              <img src={image} className={styles.img} />
-            </div>
-          ))}
-        </div>
+    <>
+      {modalInfo.isOpen && (
+        <Modal onClose={showModal}>
+          <img src={modalInfo.imgUrl} alt='img' />
+        </Modal>
       )}
+      <div
+        className={styles.container}
+        style={
+          isHovering
+            ? {
+                backgroundColor: noteState.bgColor,
+                justifyContent: "space-between",
+              }
+            : {
+                backgroundColor: noteState.bgColor,
+                justifyContent: "flex-start",
+              }
+        }
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+      >
+        <div className={styles.headingContainer}>
+          <input
+            type='text'
+            className={styles.title}
+            value={noteState.title}
+            onChange={(e) => handleTitleChange(e)}
+            placeholder='Title'
+          />
 
-      <div className={styles.bottomIconsContainer}>
-        <IoColorFillOutline
-          className={styles.bottomIcons}
-          onClick={handleColorChange}
+          <AnimatePresence>
+            {isHovering &&
+              (noteState.isPinned ? (
+                <motion.div
+                  className={styles.pinIcons}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={handlePinNote}
+                >
+                  <BsPinFill className={styles.pin} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  className={styles.pinIcons}
+                  onClick={handlePinNote}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <BsPin className={styles.pin} />
+                </motion.div>
+              ))}
+          </AnimatePresence>
+        </div>
+
+        <textarea
+          className={styles.content}
+          value={noteState.note}
+          onChange={(e) => {
+            handleNoteChange(e);
+          }}
+          ref={textRef}
+          placeholder='Take a note....'
         />
 
-        <label className={styles.uploadImg}>
-          <MdOutlineImage className={styles.bottomIcons} />
-          <input
-            type='file'
-            id='image'
-            accept='.png, .jpg, .jpeg'
-            onChange={changeHandler}
-          />
-        </label>
-
-        {noteState.inArchive ? (
-          <MdArchive
-            className={styles.bottomIcons}
-            onClick={handleArchiveNote}
-          />
-        ) : (
-          <MdOutlineArchive
-            className={styles.bottomIcons}
-            onClick={handleArchiveNote}
-          />
+        {noteState.images && (
+          <div key={2} className={styles.imgPreviewContainer}>
+            {noteState.images.map((image: string, index: number) => (
+              <div
+                key={index}
+                className={styles.imgOuter}
+                onClick={() => showModal(image)}
+              >
+                <img src={image} className={styles.img} />
+              </div>
+            ))}
+          </div>
         )}
 
-        {noteState.inTrash ? (
-          <MdDelete className={styles.bottomIcons} onClick={handleDeleteNote} />
-        ) : (
-          <MdDeleteOutline
+        <div className={styles.bottomIconsContainer}>
+          <IoColorFillOutline
             className={styles.bottomIcons}
-            onClick={handleDeleteNote}
+            onClick={handleColorChange}
           />
-        )}
-      </div>
-    </div>
+
+          <label className={styles.uploadImg}>
+            <MdOutlineImage className={styles.bottomIcons} />
+            <input
+              type='file'
+              id='image'
+              accept='.png, .jpg, .jpeg'
+              onChange={changeHandler}
+            />
+          </label>
+
+          {noteState.inArchive ? (
+            <MdArchive
+              className={styles.bottomIcons}
+              onClick={handleArchiveNote}
+            />
+          ) : (
+            <MdOutlineArchive
+              className={styles.bottomIcons}
+              onClick={handleArchiveNote}
+            />
+          )}
+
+          {noteState.inTrash ? (
+            <MdDelete
+              className={styles.bottomIcons}
+              onClick={handleDeleteNote}
+            />
+          ) : (
+            <MdDeleteOutline
+              className={styles.bottomIcons}
+              onClick={handleDeleteNote}
+            />
+          )}
+        </div>
+      </div>{" "}
+    </>
   );
 };
 
