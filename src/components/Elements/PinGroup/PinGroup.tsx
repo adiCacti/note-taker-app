@@ -43,7 +43,7 @@ const PinGroup = () => {
             inTrash,
             inArchive,
           }: INote) => {
-            if (isPinned)
+            if (isPinned && !inTrash && !inArchive)
               return (
                 <Note
                   key={id}
