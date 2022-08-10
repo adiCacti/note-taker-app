@@ -1,4 +1,3 @@
-import React from "react";
 // icons
 import { HiOutlineDocumentAdd } from "react-icons/hi";
 // hooks
@@ -26,7 +25,7 @@ const NotesGroup = () => {
 
   return (
     <div className={styles.outerContainer}>
-      <h2>Notes 📝 </h2>
+      <h2>Notes 📝</h2>
       <div className={styles.container}>
         {notes.map(
           ({
