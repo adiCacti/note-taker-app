@@ -32,14 +32,6 @@ This app helps you to take notes. You can pin notes, move them to archive or mov
 
 ![screenshot](Note-Taker-Screenshot.png)
 
-## Dependencies 🗃
-
-- [NextJs] - **Frontend Framework**
-- [MUI] - **Component Library**
-- [React-Dropzone] - **React Based Animations**
-- [React-Data-Table-Component] - **Table component library for react**
-- [LocalForage] - **DB for offline storage**
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
