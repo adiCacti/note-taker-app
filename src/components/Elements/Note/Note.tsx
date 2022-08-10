@@ -138,7 +138,6 @@ const Note = ({
   };
 
   const handleArchiveNote = () => {
-    console.log(noteState.inArchive);
     if (noteState.inArchive) {
       setNoteState((prev) => {
         return {
