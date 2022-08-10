@@ -1,4 +1,4 @@
-import React, { ChangeEvent, LegacyRef, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 // icons
 import { BsPin, BsPinFill } from "react-icons/bs";
 import {
@@ -10,9 +10,11 @@ import { IoColorFillOutline } from "react-icons/io5";
 // styles
 import styles from "./CreateNote.module.scss";
 // libraries
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { v4 as uuid } from "uuid";
+import { AnimatePresence, motion } from "framer-motion";
+// hooks
 import { useDispatch } from "react-redux";
+// slices
 import { addNote } from "../../../slices/notes";
 // types
 import { INote } from "../../../slices/notes";
@@ -32,8 +34,6 @@ const bgColorForNote = [
 ];
 
 const CreateNote = () => {
-  const [parent] = useAutoAnimate();
-
   const dispatch = useDispatch();
 
   const [isHovering, setIsHovering] = useState(false);
@@ -124,62 +124,83 @@ const CreateNote = () => {
   };
 
   return (
-    <div
-      className={styles.container}
-      style={{ backgroundColor: noteState.bgColor }}
-      onMouseOver={handleMouseOver}
-      onMouseOut={handleMouseOut}
-      ref={parent as LegacyRef<HTMLDivElement> | undefined}
-    >
-      <div className={styles.headingContainer}>
-        <input
-          type='text'
-          className={styles.title}
-          value={noteState.title}
-          onChange={(e) => handleTitleChange(e)}
-          placeholder='Title'
+    <div className={styles.outerContainer}>
+      <div
+        className={styles.container}
+        style={{ backgroundColor: noteState.bgColor }}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+      >
+        <div className={styles.headingContainer}>
+          <input
+            type='text'
+            className={styles.title}
+            value={noteState.title}
+            onChange={(e) => handleTitleChange(e)}
+            placeholder='Title'
+          />
+
+          <AnimatePresence>
+            {isHovering &&
+              (noteState.isPinned ? (
+                <motion.div
+                  className={styles.pinIcons}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={handlePinNote}
+                >
+                  <BsPinFill className={styles.pin} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  className={styles.pinIcons}
+                  onClick={handlePinNote}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <BsPin className={styles.pin} />
+                </motion.div>
+              ))}
+          </AnimatePresence>
+        </div>
+
+        <textarea
+          className={styles.content}
+          value={noteState.note}
+          onChange={(e) => {
+            handleNoteChange(e);
+          }}
+          ref={textRef}
+          placeholder='Take a note....'
         />
 
-        {isHovering &&
-          (noteState.isPinned ? (
-            <div className={styles.pinIcons} onClick={handlePinNote}>
-              <BsPinFill className={styles.pin} />
-            </div>
-          ) : (
-            <div className={styles.pinIcons} onClick={handlePinNote}>
-              <BsPin className={styles.pin} />
-            </div>
-          ))}
+        <AnimatePresence>
+          {isHovering && (
+            <motion.div
+              className={styles.bottomIconsContainer}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <IoColorFillOutline
+                className={styles.bottomIcons}
+                onClick={handleColorChange}
+              />
+              <MdOutlineImage className={styles.bottomIcons} />
+              <MdOutlineArchive className={styles.bottomIcons} />
+
+              <button
+                className={styles.createNoteBtn}
+                onClick={handleCreateNoteBtnClick}
+              >
+                Create Note
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <textarea
-        className={styles.content}
-        value={noteState.note}
-        onChange={(e) => {
-          handleNoteChange(e);
-        }}
-        ref={textRef}
-        placeholder='Take a note....'
-      />
-
-      {isHovering && (
-        <div className={styles.bottomIconsContainer}>
-          <IoColorFillOutline
-            className={styles.bottomIcons}
-            onClick={handleColorChange}
-          />
-          <MdOutlineImage className={styles.bottomIcons} />
-          <MdOutlineArchive className={styles.bottomIcons} />
-          <MdDeleteOutline className={styles.bottomIcons} />
-
-          <button
-            className={styles.createNoteBtn}
-            onClick={handleCreateNoteBtnClick}
-          >
-            Create Note
-          </button>
-        </div>
-      )}
     </div>
   );
 };
