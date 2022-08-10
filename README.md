@@ -29,8 +29,7 @@ This app helps you to take notes. You can pin notes, move them to archive or mov
 - [Vercel] - **For Deployment**
 
 ## Screenshot
-
-![screenshot](Note-Taker-Screenshot.png)
+![Screenshot 2022-08-10 at 11 57 01 AM](https://user-images.githubusercontent.com/90179946/183830941-a8a3854e-5a08-4e6a-b70e-6938cf77754b.png)
 
 ## Contributing
 
