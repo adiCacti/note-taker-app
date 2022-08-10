@@ -1,19 +1,21 @@
-import { ChangeEvent, LegacyRef, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 // icons
 import { BsPin, BsPinFill } from "react-icons/bs";
 import {
+  MdDelete,
   MdDeleteOutline,
   MdOutlineArchive,
+  MdArchive,
   MdOutlineImage,
 } from "react-icons/md";
 import { IoColorFillOutline } from "react-icons/io5";
 // styles
 import styles from "./Note.module.scss";
 // libraries
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { v4 as uuid } from "uuid";
 import { useDispatch } from "react-redux";
-import { updateNote } from "../../../slices/notes";
+import { AnimatePresence, motion } from "framer-motion";
+// slices
+import { deleteNote, updateNote } from "../../../slices/notes";
 // types
 import { INote } from "../../../slices/notes";
 
@@ -43,21 +45,19 @@ const Note = ({
   inTrash,
   inArchive,
 }: NotesProps) => {
-  const [parent] = useAutoAnimate();
-
   const dispatch = useDispatch();
 
   const [isHovering, setIsHovering] = useState(false);
 
   const [noteState, setNoteState] = useState<INote>({
-    id: uuid(),
-    title: "",
-    note: "",
-    bgColor: "#1F2025",
-    images: [],
-    isPinned: false,
-    inTrash: false,
-    inArchive: false,
+    id: id,
+    title: title,
+    note: note,
+    bgColor: bgColor,
+    images: images,
+    isPinned: isPinned,
+    inTrash: inTrash,
+    inArchive: inArchive,
   });
 
   const textRef = useRef<null | HTMLTextAreaElement>(null);
@@ -103,7 +103,7 @@ const Note = ({
   };
 
   const handlePinNote = () => {
-    if (isPinned) {
+    if (noteState.isPinned) {
       setNoteState((prev) => {
         return {
           ...prev,
@@ -122,49 +122,92 @@ const Note = ({
 
   const handleUpdateNoteBtnClick = () => {
     dispatch(updateNote(noteState));
-    setNoteState({
-      id: uuid(),
-      title: "",
-      note: "",
-      bgColor: "#1F2025",
-      images: [],
-      isPinned: false,
-      inTrash: false,
-      inArchive: false,
-    });
   };
+
+  const handleDeleteNote = () => {
+    if (noteState.inTrash) {
+      dispatch(deleteNote(noteState.id));
+    } else {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          inTrash: true,
+        };
+      });
+    }
+  };
+
+  const handleArchiveNote = () => {
+    console.log(noteState.inArchive);
+    if (noteState.inArchive) {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          inArchive: false,
+        };
+      });
+    } else {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          inArchive: true,
+        };
+      });
+    }
+  };
+
   return (
     <div
       className={styles.container}
-      style={{ backgroundColor: bgColor }}
+      style={
+        isHovering
+          ? {
+              backgroundColor: noteState.bgColor,
+              justifyContent: "space-between",
+            }
+          : { backgroundColor: noteState.bgColor, justifyContent: "flex-start" }
+      }
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
-      ref={parent as LegacyRef<HTMLDivElement> | undefined}
     >
       <div className={styles.headingContainer}>
         <input
           type='text'
           className={styles.title}
-          value={title}
+          value={noteState.title}
           onChange={(e) => handleTitleChange(e)}
           placeholder='Title'
         />
 
-        {isHovering &&
-          (isPinned ? (
-            <div className={styles.pinIcons} onClick={handlePinNote}>
-              <BsPinFill className={styles.pin} />
-            </div>
-          ) : (
-            <div className={styles.pinIcons} onClick={handlePinNote}>
-              <BsPin className={styles.pin} />
-            </div>
-          ))}
+        <AnimatePresence>
+          {isHovering &&
+            (noteState.isPinned ? (
+              <motion.div
+                className={styles.pinIcons}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={handlePinNote}
+              >
+                <BsPinFill className={styles.pin} />
+              </motion.div>
+            ) : (
+              <motion.div
+                className={styles.pinIcons}
+                onClick={handlePinNote}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <BsPin className={styles.pin} />
+              </motion.div>
+            ))}
+        </AnimatePresence>
       </div>
 
       <textarea
         className={styles.content}
-        value={note}
+        value={noteState.note}
         onChange={(e) => {
           handleNoteChange(e);
         }}
@@ -172,24 +215,53 @@ const Note = ({
         placeholder='Take a note....'
       />
 
-      {isHovering && (
-        <div className={styles.bottomIconsContainer}>
-          <IoColorFillOutline
-            className={styles.bottomIcons}
-            onClick={handleColorChange}
-          />
-          <MdOutlineImage className={styles.bottomIcons} />
-          <MdOutlineArchive className={styles.bottomIcons} />
-          <MdDeleteOutline className={styles.bottomIcons} />
-
-          <button
-            className={styles.createNoteBtn}
-            onClick={handleUpdateNoteBtnClick}
+      <AnimatePresence>
+        {isHovering && (
+          <motion.div
+            className={styles.bottomIconsContainer}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            Update Note
-          </button>
-        </div>
-      )}
+            <IoColorFillOutline
+              className={styles.bottomIcons}
+              onClick={handleColorChange}
+            />
+            <MdOutlineImage className={styles.bottomIcons} />
+
+            {noteState.inArchive ? (
+              <MdArchive
+                className={styles.bottomIcons}
+                onClick={handleArchiveNote}
+              />
+            ) : (
+              <MdOutlineArchive
+                className={styles.bottomIcons}
+                onClick={handleArchiveNote}
+              />
+            )}
+
+            {noteState.inTrash ? (
+              <MdDelete
+                className={styles.bottomIcons}
+                onClick={handleDeleteNote}
+              />
+            ) : (
+              <MdDeleteOutline
+                className={styles.bottomIcons}
+                onClick={handleDeleteNote}
+              />
+            )}
+
+            <button
+              className={styles.updateNowBtn}
+              onClick={handleUpdateNoteBtnClick}
+            >
+              Update Note
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
