@@ -27,7 +27,7 @@ const Sidebar = ({
       >
         <div className={styles.sidebarTopic}>
           <MdOutlineLightbulb className={styles.icons} />
-          <h1>Notes</h1>
+          <h1 className={styles.mainText}>Notes</h1>
         </div>
       </div>
 
@@ -42,7 +42,7 @@ const Sidebar = ({
       >
         <div className={styles.sidebarTopic}>
           <MdOutlineArchive className={styles.icons} />
-          <h1>Archive</h1>
+          <h1 className={styles.mainText}>Archive</h1>
         </div>
       </div>
 
@@ -57,7 +57,7 @@ const Sidebar = ({
       >
         <div className={styles.sidebarTopic}>
           <BiTrash className={styles.icons} />
-          <h1>Trash</h1>
+          <h1 className={styles.mainText}>Trash</h1>
         </div>
       </div>
     </div>
