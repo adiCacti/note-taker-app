@@ -7,6 +7,8 @@ import { INote, selectedNotes } from "../../../slices/notes";
 import Note from "../Note/Note";
 // styles
 import styles from "./TrashGroup.module.scss";
+// icons
+import { MdDeleteOutline } from "react-icons/md";
 
 const TrashGroup = () => {
   const notes = useSelector(selectedNotes);
@@ -26,7 +28,15 @@ const TrashGroup = () => {
     setNumOfNotesInTrash(getNotesInTrash());
   }, [notes]);
 
-  if (numOfNotesInTrash === 0) return <></>;
+  if (numOfNotesInTrash === 0)
+    return (
+      <div className={styles.outerContainerForEmptyNotes}>
+        <div className={styles.emptyNotes}>
+          <MdDeleteOutline className={styles.addNotesIcons} />
+          <h1 className={styles.addNotesText}>Nothing in Trash...</h1>
+        </div>
+      </div>
+    );
 
   return (
     <div className={styles.outerContainer}>

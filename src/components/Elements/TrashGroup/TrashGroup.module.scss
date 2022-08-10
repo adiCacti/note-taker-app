@@ -13,3 +13,23 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }
+
+.outerContainerForEmptyNotes {
+  .emptyNotes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    width: fit-content;
+
+    .addNotesIcons {
+      width: 100px;
+      height: 100px;
+      filter: brightness(50%);
+    }
+
+    .addNotesText {
+      filter: brightness(50%);
+    }
+  }
+}
