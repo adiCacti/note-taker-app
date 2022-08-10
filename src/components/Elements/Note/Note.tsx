@@ -20,6 +20,7 @@ import { deleteNote, updateNote } from "../../../slices/notes";
 import { INote } from "../../../slices/notes";
 // hooks
 import { useDebounce } from "../../../hooks/useDebounce";
+// components
 import { Modal } from "../Modal/Modal";
 
 const bgColorForNote = [
@@ -346,7 +347,7 @@ const Note = ({
             />
           )}
         </div>
-      </div>{" "}
+      </div>
     </>
   );
 };

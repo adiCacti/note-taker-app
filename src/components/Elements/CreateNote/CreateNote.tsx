@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 // icons
 import { BsPin, BsPinFill } from "react-icons/bs";
-import { MdOutlineArchive, MdOutlineImage } from "react-icons/md";
+import { MdArchive, MdOutlineArchive, MdOutlineImage } from "react-icons/md";
 import { IoColorFillOutline } from "react-icons/io5";
 // styles
 import styles from "./CreateNote.module.scss";
@@ -106,6 +106,24 @@ const CreateNote = () => {
         return {
           ...prev,
           isPinned: true,
+        };
+      });
+    }
+  };
+
+  const handleArchiveNote = () => {
+    if (noteState.inArchive) {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          inArchive: false,
+        };
+      });
+    } else {
+      setNoteState((prev) => {
+        return {
+          ...prev,
+          inArchive: true,
         };
       });
     }
@@ -252,7 +270,17 @@ const CreateNote = () => {
             />
           </label>
 
-          <MdOutlineArchive className={styles.bottomIcons} />
+          {noteState.inArchive ? (
+            <MdArchive
+              className={styles.bottomIcons}
+              onClick={handleArchiveNote}
+            />
+          ) : (
+            <MdOutlineArchive
+              className={styles.bottomIcons}
+              onClick={handleArchiveNote}
+            />
+          )}
 
           <button
             className={styles.createNoteBtn}
