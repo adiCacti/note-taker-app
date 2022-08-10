@@ -1,6 +1,22 @@
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Redux](https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white)
+![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
+![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)
+[![Website Badge](https://img.shields.io/badge/Visit-Now-green?style=for-the-badge&logo=vercel)](https://note-taker-app-black.vercel.app/)
+
 # Note Taker App 🗒️
 
 This app helps you to take notes. You can pin notes, move them to archive or move to trash. It is a simple application to make you life easy. 😺
+
+## Overview 👀
+
+- **Simple UI ⚡**
+- **Mobile responsive 📱**
+- **Colors can be added to each notes 🍭**
+- **Notes can be archived 🫙**
+- **Notes can be added to trash 🗑️**
+- **Made using typescript 🏃**
 
 ## Dependencies 🗃
 
@@ -12,27 +28,9 @@ This app helps you to take notes. You can pin notes, move them to archive or mov
 - [UUIDV4] - **To Generate Unique ID's**
 - [Vercel] - **For Deployment**
 
-## Deployed Application
-
-The application is deployed on vercel at https://note-taker-app-black.vercel.app/
-
 ## Screenshot
 
 ![screenshot](Note-Taker-Screenshot.png)
-
-![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
-![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)
-![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
-[![Website Badge](https://img.shields.io/badge/Visit-Now-green?style=for-the-badge&logo=vercel)](https://dsa-questions-tracker.vercel.app/)
-
-## Overview 👀
-
-- **Simple UI ⚡**
-- **Mobile responsive 📱**
-- **Colors can be added to each notes 🍭**
-- **Notes can be archived 🫙**
-- **Notes can be added to trash 🗑️**
-- **Made using typescript 🏃**
 
 ## Dependencies 🗃
 
