@@ -123,6 +123,8 @@ const CreateNote = () => {
       inTrash: false,
       inArchive: false,
     });
+    setFileToImport([]);
+    setIsDropzoneOpen(false);
   };
 
   const handleDropzone = () => {
@@ -139,6 +141,11 @@ const CreateNote = () => {
       });
     }
   }, [fileToImport]);
+
+  useEffect(() => {
+    console.log("inside createnote");
+    console.log(noteState.images);
+  }, [noteState]);
 
   return (
     <div className={styles.outerContainer}>
