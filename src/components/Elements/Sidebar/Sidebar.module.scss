@@ -1,5 +1,5 @@
 .container {
-  min-width: 15%;
+  width: 15%;
   padding-top: 50px;
   display: flex;
   flex-direction: column;
@@ -7,9 +7,13 @@
   justify-content: space-between;
   max-height: 300px;
 
-  .icons {
-    width: 45px;
-    height: 45px;
+  @media (max-width: 1200px) {
+    max-height: 200px;
+    width: 20%;
+  }
+
+  @media (max-width: 900px) {
+    width: 10%;
   }
 
   .sideBarTopicOuter {
@@ -22,11 +26,52 @@
     }
 
     .sidebarTopic {
+      width: 80%;
       margin: 0 auto;
-      width: 200px;
+
       display: flex;
       align-items: center;
       justify-content: space-around;
+
+      .icons {
+        width: 45px;
+        height: 45px;
+
+        @media (max-width: 1500px) {
+          width: 35px;
+          height: 35px;
+        }
+
+        @media (max-width: 1200px) {
+          width: 28px;
+          height: 28px;
+        }
+
+        @media (max-width: 900px) {
+          margin: 15px 0;
+        }
+
+        @media (max-width: 480px) {
+          width: 22px;
+          height: 22px;
+        }
+      }
+
+      .mainText {
+        font-size: 32px;
+
+        @media (max-width: 1500px) {
+          font-size: 25px;
+        }
+
+        @media (max-width: 1200px) {
+          font-size: 20px;
+        }
+
+        @media (max-width: 900px) {
+          display: none;
+        }
+      }
     }
   }
 }
