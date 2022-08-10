@@ -1,0 +1,35 @@
+.modal {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  .close {
+    position: absolute;
+    top: 50px;
+    right: 100px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .modalContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 85%;
+    height: 100%;
+    margin: auto;
+
+    img {
+      max-width: 600px;
+      max-height: 600px;
+    }
+  }
+}
