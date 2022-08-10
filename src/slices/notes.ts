@@ -12,33 +12,29 @@ export interface INote {
   inTrash: boolean;
   inArchive: boolean;
 }
-export interface INotes {
-  notes: INote[];
-}
-
-const initialState: INotes = {
-  notes: [],
-};
 
 export const notesSlice = createSlice({
   name: "notes",
-  initialState,
+  initialState: {
+    notes: [] as INote[],
+  },
   reducers: {
     addNote: (state: any, action: PayloadAction<INote>) => {
-      // const data = state.notes;
-      // console.log(data, "states\n", action.payload, "action");
-      // return [...state.notes, action.payload] as any;
-      state.notes.push(action.payload);
-      state.notes = [...state.notes];
+      let newNote = {
+        ...action.payload,
+      };
+      state.notes.push(newNote);
     },
     deleteNote: (state, action: PayloadAction<string>) => {
-      state.notes = state.notes.filter((item) => item.id !== action.payload);
+      let { notes } = state;
+      const id = action.payload;
+      state.notes = notes.filter((item) => item.id !== id);
     },
     updateNote: (state, action: PayloadAction<INote>) => {
-      state.notes.map((item) => {
-        if (item.id === action.payload.id) return action.payload as INote;
-        else item as INote;
-      });
+      let { notes } = state;
+      state.notes = notes.map((item) =>
+        item.id === action.payload.id ? action.payload : item
+      );
     },
   },
 });
