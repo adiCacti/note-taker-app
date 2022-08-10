@@ -7,6 +7,8 @@ import { INote, selectedNotes } from "../../../slices/notes";
 import Note from "../Note/Note";
 // styles
 import styles from "./ArchiveGroup.module.scss";
+// icons
+import { MdOutlineArchive } from "react-icons/md";
 
 const ArchiveGroup = () => {
   const notes = useSelector(selectedNotes);
@@ -26,12 +28,18 @@ const ArchiveGroup = () => {
     setNumOfNotesInArchive(getNotesInArchive());
   }, [notes]);
 
-  if (numOfNotesInArchive === 0) return <></>;
-  console.log(numOfNotesInArchive);
+  if (numOfNotesInArchive === 0)
+    return (
+      <div className={styles.outerContainerForEmptyNotes}>
+        <div className={styles.emptyNotes}>
+          <MdOutlineArchive className={styles.addNotesIcons} />
+          <h1 className={styles.addNotesText}>Empty Archive...</h1>
+        </div>
+      </div>
+    );
 
   return (
     <div className={styles.outerContainer}>
-      {/* <h2></h2> */}
       <div className={styles.container}>
         {notes.map(
           ({
