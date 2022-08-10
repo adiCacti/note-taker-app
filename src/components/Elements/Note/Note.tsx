@@ -20,6 +20,8 @@ import { deleteNote, updateNote } from "../../../slices/notes";
 import { INote } from "../../../slices/notes";
 // components
 import Dropzone from "../Dropzone/Dropzone";
+// hooks
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const bgColorForNote = [
   "#5D2C2A",
@@ -65,6 +67,8 @@ const Note = ({
     inTrash: inTrash,
     inArchive: inArchive,
   });
+
+  const debouncedNoteState = useDebounce<INote>(noteState, 1000);
 
   const textRef = useRef<null | HTMLTextAreaElement>(null);
 
@@ -126,11 +130,6 @@ const Note = ({
     }
   };
 
-  const handleUpdateNoteBtnClick = () => {
-    dispatch(updateNote(noteState));
-    setIsDropzoneOpen(false);
-  };
-
   const handleDeleteNote = () => {
     if (noteState.inTrash) {
       dispatch(deleteNote(noteState.id));
@@ -178,9 +177,12 @@ const Note = ({
   }, [fileToImport]);
 
   useEffect(() => {
-    console.log("inside note");
-    console.log(noteState.images);
-  }, [noteState]);
+    if (debouncedNoteState) {
+      console.log("hey this works wow");
+      dispatch(updateNote(noteState));
+      setIsDropzoneOpen(false);
+    }
+  }, [debouncedNoteState]);
 
   return (
     <div
@@ -302,13 +304,6 @@ const Note = ({
                 onClick={handleDeleteNote}
               />
             )}
-
-            <button
-              className={styles.updateNowBtn}
-              onClick={handleUpdateNoteBtnClick}
-            >
-              Update Note
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
