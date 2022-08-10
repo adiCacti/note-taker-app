@@ -1,11 +1,36 @@
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
-  gap: 20px 20px;
-  grid-template-areas:
-    ". . . ."
-    ". . . ."
-    ". . . ."
-    ". . . .";
+.outerContainer {
+  width: 100%;
+  min-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+
+  .container {
+    max-width: 100%;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.outerContainerForEmptyNotes {
+  .emptyNotes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    width: fit-content;
+
+    .addNotesIcons {
+      width: 100px;
+      height: 100px;
+      filter: brightness(50%);
+    }
+
+    .addNotesText {
+      filter: brightness(50%);
+    }
+  }
 }
