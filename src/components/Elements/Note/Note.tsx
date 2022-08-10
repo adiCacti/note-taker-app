@@ -128,6 +128,7 @@ const Note = ({
 
   const handleUpdateNoteBtnClick = () => {
     dispatch(updateNote(noteState));
+    setIsDropzoneOpen(false);
   };
 
   const handleDeleteNote = () => {
@@ -177,7 +178,8 @@ const Note = ({
   }, [fileToImport]);
 
   useEffect(() => {
-    console.table(noteState.images);
+    console.log("inside note");
+    console.log(noteState.images);
   }, [noteState]);
 
   return (
@@ -244,12 +246,12 @@ const Note = ({
           <Dropzone key={1} setFileToImport={setFileToImport} />
         )}
 
-        {images && (
+        {noteState.images && (
           <div key={2} className={styles.imgPreviewContainer}>
             {noteState.images.map((image: string, index: number) => (
               <div key={index} className={styles.imgOuter}>
                 <img
-                  src={image.slice(5)}
+                  src={image}
                   className={styles.img}
                   onLoad={() => {
                     URL.revokeObjectURL(image);
