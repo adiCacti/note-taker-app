@@ -1,0 +1,32 @@
+.container {
+  min-width: 15%;
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  max-height: 300px;
+
+  .icons {
+    width: 45px;
+    height: 45px;
+  }
+
+  .sideBarTopicOuter {
+    width: 100%;
+    background-color: #202025;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    &:hover {
+      filter: brightness(150%);
+    }
+
+    .sidebarTopic {
+      margin: 0 auto;
+      width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+  }
+}
